@@ -30,15 +30,15 @@ func NewAPIClient(baseURL string, virtualServer string, apiKey string) *APIClien
 }
 
 func APIClientFromEnv() *APIClient {
-	baseURL, parseError := url.Parse(getEnv("URL", "http://127.0.0.1:10080"))
+	baseURL, parseError := url.Parse(GetEnv("TSIDLE_QUERY_URL", "http://127.0.0.1:10080"))
 	if parseError != nil {
 		panic(parseError)
 	}
 
 	return &APIClient{
 		BaseURL:       baseURL,
-		VirtualServer: getEnv("VIRTUAL_SERVER", "1"),
-		apiKey:        getEnv("API_KEY", ""),
+		VirtualServer: GetEnv("TSIDLE_VIRTUAL_SERVER", "1"),
+		apiKey:        GetEnv("TSIDLE_API_KEY", ""),
 	}
 }
 
@@ -46,18 +46,24 @@ func (c *APIClient) Request(method string, path string, body io.Reader) *http.Re
 	req, _ := http.NewRequest(method, fmt.Sprintf("%s/%s%s", c.BaseURL, c.VirtualServer, path), body)
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("x-api-key", c.apiKey)
-	// debug.DdRequest(req, false)
+	// debug.DdRequest(req)
 	return req
 }
 
 func (c *APIClient) HandleResponse(res *http.Response, err error) (*http.Response, error) {
+	if err != nil {
+		return nil, fmt.Errorf("connection failed %s", err.Error())
+	}
+
 	if res.StatusCode == http.StatusOK {
 		return res, nil
 	}
 
+	// debug.DdResBody(res)
+
 	err_body, _ := io.ReadAll(res.Body)
 
-	return res, fmt.Errorf(fmt.Sprintf("%v - %s", res.StatusCode, err_body))
+	return res, fmt.Errorf("%v - %s", res.StatusCode, err_body)
 }
 
 func (c *APIClient) Get(path string) (*http.Response, error) {

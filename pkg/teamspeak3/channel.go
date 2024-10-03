@@ -6,7 +6,7 @@ type ChannelList struct {
 }
 
 type Channel struct {
-	Id                              string `json:"clid,omitempty"`
+	Id                              string `json:"cid,omitempty"`
 	Banner_gfx_url                  string `json:"channel_banner_gfx_url,omitempty"`
 	Banner_mode                     string `json:"channel_banner_mode,omitempty"`
 	Codec                           string `json:"channel_codec,omitempty"`
