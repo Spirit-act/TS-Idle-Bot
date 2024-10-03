@@ -1,2 +1,5 @@
-cmd/**/*
-!cmd/**/*.go
+cmd/channels/*
+!cmd/channels/*.go
+
+cmd/ts3idle/*
+!cmd/ts3idle/*.go
